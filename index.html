@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Protest+Riot&display=swap" rel="stylesheet" />
+    <title>¿Serías mi San Valentín?</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 62.5%;
+        }
+
+        body {
+            background-color: hsl(51, 57%, 95%);
+            font-family: "Protest Riot", sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .container {
+            height: 100vh;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cat-img {
+            width: 30rem;
+            height: 30rem;
+            margin-bottom: 2rem;
+        }
+
+        .title {
+            font-size: 3.6rem;
+            color: #0c2d57;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 1.5rem 2.5rem;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-size: 1.6rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .btn--yes {
+            background-color: #40c057;
+        }
+
+        .btn--no {
+            background-color: #f03e3e;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Fondo de corazones subiendo */
+        .hearts-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .heart-bg {
+            position: absolute;
+            color: red;
+            font-size: 20px;
+            animation: floatUp linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10vh);
+                opacity: 0;
+            }
+        }
+
+        /* Animación de corazones al hacer clic en "Sí" */
+        .hearts-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .heart {
+            position: absolute;
+            color: red;
+            font-size: 20px;
+            animation: explode 1s ease-out forwards;
+        }
+
+        @keyframes explode {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(10);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="hearts-background" id="heartsBackground"></div>
+    <main class="container">
+        <img class="cat-img" src="IMG/cat-0.jpg" alt="Picture of a cat" />
+        <p class="title">¿Serías mi San Valentín?</p>
+        <div class="buttons">
+            <button type="button" class="btn btn--yes">Sí</button>
+            <button type="button" class="btn btn--no">No</button>
+        </div>
+    </main>
+    <div class="hearts-container" id="heartsContainer"></div>
+
+    <script>
+        "use strict";
+
+        const titleElement = document.querySelector(".title");
+        const buttonsContainer = document.querySelector(".buttons");
+        const yesButton = document.querySelector(".btn--yes");
+        const noButton = document.querySelector(".btn--no");
+        const catImg = document.querySelector(".cat-img");
+        const heartsContainer = document.getElementById("heartsContainer");
+        const heartsBackground = document.getElementById("heartsBackground");
+
+        const MAX_IMAGES = 10;
+
+        let play = true;
+        let noCount = 0;
+
+        // Generar corazones de fondo
+        function createBackgroundHearts() {
+            for (let i = 0; i < 50; i++) {
+                const heart = document.createElement("div");
+                heart.innerHTML = "❤️";
+                heart.classList.add("heart-bg");
+                heart.style.left = `${Math.random() * 100}vw`;
+                heart.style.animationDuration = `${Math.random() * 5 + 5}s`;
+                heart.style.animationDelay = `${Math.random() * 5}s`;
+                heartsBackground.appendChild(heart);
+            }
+        }
+
+        createBackgroundHearts();
+
+        yesButton.addEventListener("click", handleYesClick);
+
+        noButton.addEventListener("click", function () {
+            if (play) {
+                noCount++;
+                const imageIndex = Math.min(noCount, MAX_IMAGES);
+                changeImage(imageIndex);
+                resizeYesButton();
+                updateNoButtonText();
+                if (noCount === MAX_IMAGES) {
+                    play = false;
+                }
+            }
+        });
+
+        function handleYesClick() {
+            titleElement.innerHTML = "¡Yupiii!<br/>Tq<3";
+            buttonsContainer.classList.add("hidden");
+            changeImage("yes");
+            explodeHearts();
+            setTimeout(() => {
+                window.location.href = "menu.html"; // Cambia "menu.html" por la URL de tu menú
+            }, 3000); // Redirecciona después de 3 segundos
+        }
+
+        function resizeYesButton() {
+            const computedStyle = window.getComputedStyle(yesButton);
+            const fontSize = parseFloat(computedStyle.getPropertyValue("font-size"));
+            const newFontSize = fontSize * 1.6;
+
+            yesButton.style.fontSize = `${newFontSize}px`;
+        }
+
+        function generateMessage(noCount) {
+            const messages = [
+                "No",
+                "¿Estás segura? 🌷🌷",
+                "¿Realmente segura? 🥺",
+                "Por favor 🫶",
+                "Te invitaré una pizza 🍕",
+                "Entonces una torta de chocolate 🍫",
+                "Veremos películas 🎥",
+                "Iremos a la playa 🏖️",
+                "Jugaremos videojuegos juntos 👾",
+                "¡Voy a llorar...! 😭",
+                "Estás rompiendo mi corazón 💔",
+            ];
+
+            const messageIndex = Math.min(noCount, messages.length - 1);
+            return messages[messageIndex];
+        }
+
+        function changeImage(image) {
+            catImg.src = `IMG/cat-${image}.jpg`;
+        }
+
+        function updateNoButtonText() {
+            noButton.innerHTML = generateMessage(noCount);
+        }
+
+        function explodeHearts() {
+            for (let i = 0; i < 50; i++) {
+                const heart = document.createElement("div");
+                heart.innerHTML = "❤️";
+                heart.classList.add("heart");
+                heart.style.left = `${Math.random() * 100}vw`;
+                heart.style.top = `${Math.random() * 100}vh`;
+                heart.style.animationDelay = `${Math.random() * 0.5}s`;
+                heartsContainer.appendChild(heart);
+            }
+        }
+    </script>
+</body>
+
+</html>
