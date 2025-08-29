@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rompecabezas Móvil</title>
+    <style>
+        body {
+            background: rgb(248, 130, 199);
+            margin: 0;
+            padding: 0;
+            font-family: Helvetica, Arial, sans-serif;
+            color: #FFF;
+        }
+
+        #content {
+            padding: 10px;
+            text-align: center;
+        }
+
+        #titulo {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        #conf {
+            margin-bottom: 20px;
+        }
+
+        select, input[type='button'] {
+            font-size: 1em;
+            padding: 5px;
+            margin: 5px;
+        }
+
+        table {
+            margin: auto;
+            border-collapse: collapse;
+        }
+
+        td.pieza {
+            background: url('../IMG/2 (2).jpg');
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        @media (max-width: 600px) {
+            #titulo {
+                font-size: 1.5em;
+            }
+
+            select, input[type='button'] {
+                width: 90%;
+                margin: 10px auto;
+            }
+
+            td.pieza {
+                width: 50px;
+                height: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id='content'>
+        <div id="titulo">Bin ROMPECABEZAS</div>
+        <div id='conf'>
+            <span>Nro de piezas:</span>
+            <select id='piezas'>
+                <option value='4'>4</option>
+                <option value='9'>9</option>
+                <option value='16'>16</option>
+                <option value='25'>25</option>
+                <option value='36'>36</option>
+                <option value='100'>100</option>
+            </select>
+            <input type='button' id='barajar' value='Barajar' />
+            <div><span>Pulsa en un cuadro y luego en otro para intercambiar sus posiciones!!</span></div>
+        </div>
+        <div id="div_content"></div>
+    </div>
+
+    <script>
+        var select = false;
+        var c = "inc";
+        var pos_s = "";
+        var id_s = "";
+
+        var rompecabezas = {
+            _arr_pos_r: [], // Posiciones correctas
+            _arr_pos_a: [], // Posiciones actuales
+
+            _mostrar: function() {
+                this._arr_pos_r = []; // Reiniciar el array de posiciones correctas
+                var piezas = parseInt(this._get("piezas").value); // Número de piezas seleccionadas
+                var tb = document.createElement('table'); // Crear la tabla
+                tb.border = 0;
+                var ar = Math.sqrt(piezas); // Calcular el número de filas/columnas
+                var tam_img = 300; // Tamaño de la imagen
+                var pos_img = tam_img / ar; // Tamaño de cada pieza
+
+                for (var fil = 1; fil <= ar; fil++) {
+                    var tr = document.createElement('tr'); // Crear fila
+                    for (var cel = 1; cel <= ar; cel++) {
+                        var td = document.createElement('td'); // Crear celda
+                        td.className = 'pieza';
+                        var id = (fil - 1) * ar + cel; // Calcular el ID de la pieza
+                        td.id = 'pos_' + id;
+                        td.style.width = pos_img + 'px';
+                        td.style.height = pos_img + 'px';
+                        var p = Math.round(((pos_img * cel) - pos_img) * -1) + 'px ' + Math.round(((fil * pos_img) - pos_img) * -1) + 'px';
+                        td.style.backgroundPosition = p; // Posición de la pieza en la imagen
+                        this._arr_pos_r.push(p); // Guardar la posición correcta
+                        td.onclick = function() {
+                            rompecabezas._cambiaBGP(this.id); // Manejar clic en la pieza
+                            rompecabezas._compruebaFin(); // Verificar si el rompecabezas está resuelto
+                        };
+                        tr.appendChild(td); // Añadir celda a la fila
+                    }
+                    tb.appendChild(tr); // Añadir fila a la tabla
+                }
+
+                var cont = this._get("div_content");
+                cont.innerHTML = ''; // Limpiar el contenedor
+                cont.appendChild(tb); // Añadir la tabla al contenedor
+            },
+
+            _barajar: function() {
+                var pie = parseInt(this._get("piezas").value); // Número de piezas
+                var arr = Array.from({ length: pie }, (_, i) => i + 1); // Crear un array de 1 a pie
+                arr.sort(() => Math.random() - 0.5); // Barajar el array
+
+                // Aplicar las posiciones barajadas
+                arr.forEach((num, idx) => {
+                    var id = idx + 1;
+                    this._get("pos_" + id).style.backgroundPosition = this._arr_pos_r[num - 1];
+                });
+            },
+
+            _cambiaBGP: function(id) {
+                if (!select) {
+                    pos_s = this._get(id).style.backgroundPosition; // Guardar la posición de la primera pieza
+                    id_s = id;
+                    select = true;
+                    this._get(id_s).style.transform = 'scale(1.1)'; // Resaltar la pieza seleccionada
+                } else {
+                    var pos_n = this._get(id).style.backgroundPosition; // Guardar la posición de la segunda pieza
+                    this._get(id).style.backgroundPosition = pos_s; // Intercambiar posiciones
+                    this._get(id_s).style.backgroundPosition = pos_n;
+                    select = false;
+                    this._get(id_s).style.transform = 'scale(1)'; // Restaurar el tamaño de la pieza
+                }
+            },
+
+            _compruebaFin: function() {
+                var pie = parseInt(this._get("piezas").value); // Número de piezas
+                var fin = this._arr_pos_r.every((pos, idx) => pos === this._get("pos_" + (idx + 1)).style.backgroundPosition); // Verificar si todas las posiciones son correctas
+                if (fin) alert("LO RESOLVISTE COMPADRE!!"); // Mostrar mensaje de victoria
+            },
+
+            _get: function(id) {
+                return document.getElementById(id); // Función auxiliar para obtener elementos por ID
+            }
+        };
+
+        window.onload = function() {
+            rompecabezas._mostrar(); // Mostrar el rompecabezas al cargar la página
+            rompecabezas._get("piezas").onchange = rompecabezas._mostrar; // Actualizar el rompecabezas al cambiar el número de piezas
+            rompecabezas._get("barajar").onclick = function() {
+                rompecabezas._barajar(); // Barajar las piezas al hacer clic en el botón
+            };
+        };
+    </script>
+</body>
+</html>
