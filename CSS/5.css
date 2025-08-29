@@ -1,0 +1,120 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(180deg, #ffb6c1, #ff69b4);
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+#game-area {
+    position: relative;
+    width: 100%;
+    max-width: 500px; /* Para que no se expanda demasiado en PC */
+    height: 90vh;
+    border: 2px solid white;
+    background: rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    border-radius: 15px;
+}
+
+/* 🏃‍♂️ Personaje */
+#player {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 60px;
+    background: url('https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/081a0288-2516-464b-b88b-bf42bdcc16f4/dg6xoz2-d2b32bc7-663d-4946-8507-41590eb02cdd.png/v1/fill/w_894,h_894,q_70,strp/kitsune_yae_miko_by_kawaiidovy_dg6xoz2-pre.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MTI4MCIsInBhdGgiOiJcL2ZcLzA4MWEwMjg4LTI1MTYtNDY0Yi1iODhiLWJmNDJiZGNjMTZmNFwvZGc2eG96Mi1kMmIzMmJjNy02NjNkLTQ5NDYtODUwNy00MTU5MGViMDJjZGQucG5nIiwid2lkdGgiOiI8PTEyODAifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.tXt_S5vNmQfShQtKWxESfudbpsUiHATRXzgPI1Kis2k') no-repeat center / cover;
+}
+
+/* ❤️ Corazones */
+.heart {
+    position: absolute;
+    width: 35px;
+    height: 35px;
+    background: url('https://i.gifer.com/origin/68/68f634fe39f11f411252fc272f6b5dae_w200.gif') no-repeat center / cover;
+}
+
+/* 🏆 HUD */
+#score-board, #timer {
+    position: absolute;
+    top: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+#score-board { left: 10px; }
+#timer { right: 10px; }
+
+/* 🎮 Game Over */
+#game-over {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px;
+    text-align: center;
+    border-radius: 10px;
+    width: 80%;
+}
+
+#game-over button {
+    padding: 10px 20px;
+    font-size: 18px;
+    background: pink;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+/* 📱 Ajustes para móviles */
+@media (max-width: 600px) {
+    #player {
+        width: 50px;
+        height: 50px;
+    }
+    .heart {
+        width: 30px;
+        height: 30px;
+    }
+}
+
+
+#home-button {
+    margin-top: 20px;
+    padding: 12px 25px;
+    font-size: 18px;
+    background-color: #ff69b4; /* Color rosa */
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.3s, transform 0.2s ease-in-out;
+}
+
+/* Efecto al pasar el cursor */
+#home-button:hover {
+    background-color: #ff1493; /* Rosa más intenso */
+    transform: scale(1.1);
+}
+
+/* Efecto al hacer clic */
+#home-button:active {
+    transform: scale(0.9);
+}
