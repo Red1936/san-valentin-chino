@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atrapa los Corazones 💖</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(180deg, #ffb6c1, #ff69b4);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        
+        #game-area {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            height: 90vh;
+            border: 2px solid white;
+            background: rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            border-radius: 15px;
+        }
+        
+        #player {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 60px;
+            background: url('https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/081a0288-2516-464b-b88b-bf42bdcc16f4/dg6xoz2-d2b32bc7-663d-4946-8507-41590eb02cdd.png/v1/fill/w_894,h_894,q_70,strp/kitsune_yae_miko_by_kawaiidovy_dg6xoz2-pre.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MTI4MCIsInBhdGgiOiJcL2ZcLzA4MWEwMjg4LTI1MTYtNDY0Yi1iODhiLWJmNDJiZGNjMTZmNFwvZGc2eG96Mi1kMmIzMmJjNy02NjNkLTQ5NDYtODUwNy00MTU5MGViMDJjZGQucG5nIiwid2lkdGgiOiI8PTEyODAifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.tXt_S5vNmQfShQtKWxESfudbpsUiHATRXzgPI1Kis2k') no-repeat center / cover;
+        }
+        
+        .heart {
+            position: absolute;
+            width: 45px; /* Corazones más grandes */
+            height: 45px; /* Corazones más grandes */
+            background: url('https://i.gifer.com/origin/68/68f634fe39f11f411252fc272f6b5dae_w200.gif') no-repeat center / cover;
+        }
+        
+        #score-board, #hearts-left {
+            position: absolute;
+            top: 10px;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        
+        #score-board { left: 10px; }
+        #hearts-left { right: 10px; }
+        
+        #game-over {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            width: 80%;
+        }
+        
+        #game-over button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background: pink;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        
+        @media (max-width: 600px) {
+            #player {
+                width: 50px;
+                height: 50px;
+            }
+            .heart {
+                width: 40px; /* Tamaño ajustado para móviles */
+                height: 40px; /* Tamaño ajustado para móviles */
+            }
+        }
+        
+        #home-button {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 16px;
+            font-size: 14px;
+            background-color: #ff69b4;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background 0.3s, transform 0.2s ease-in-out;
+            z-index: 1000;
+        }
+        
+        #home-button:hover {
+            background-color: #ff1493;
+            transform: scale(1.1);
+        }
+        
+        #home-button:active {
+            transform: scale(0.9);
+        }
+    </style>
+</head>
+<body>
+    <!-- Botón fuera del área de juego -->
+    <button id="home-button">🏠 Volver al Inicio</button>
+
+    <div id="game-area">
+        <div id="player"></div>
+        <div id="score-board">Puntaje: <span id="score">0</span></div>
+        <div id="hearts-left">Corazones: <span id="hearts">3</span></div>
+    </div>
+
+    <div id="game-over">
+        <h1>¡Juego Terminado!</h1>
+        <p>Puntaje final: <span id="final-score"></span></p>
+        <button onclick="restartGame()">Reintentar</button>
+    </div>
+
+    <script>
+        const gameArea = document.getElementById("game-area");
+        const player = document.getElementById("player");
+        const scoreDisplay = document.getElementById("score");
+        const heartsDisplay = document.getElementById("hearts");
+        const gameOverScreen = document.getElementById("game-over");
+        const finalScore = document.getElementById("final-score");
+        
+        let score = 0;
+        let heartsLeft = 3;
+        let gameRunning = true;
+        const popSound = new Audio("pop.mp3");
+        let hearts = [];
+        let playerX = gameArea.getBoundingClientRect().width / 2 - 30; // Centrado inicial
+        
+        // Variables para controlar la velocidad y cantidad de corazones
+        let heartSpeed = 3; // Velocidad inicial de caída
+        let heartSpawnRate = 1000; // Intervalo inicial de aparición de corazones (en ms)
+        let maxHearts = 1; // Cantidad máxima de corazones cayendo al mismo tiempo
+        
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "ArrowLeft") movePlayer(-20);
+            if (e.key === "ArrowRight") movePlayer(20);
+        });
+        
+        let touchStartX = 0;
+        document.addEventListener("touchstart", (e) => {
+            touchStartX = e.touches[0].clientX;
+        });
+        document.addEventListener("touchmove", (e) => {
+            let deltaX = e.touches[0].clientX - touchStartX;
+            movePlayer(deltaX);
+            touchStartX = e.touches[0].clientX;
+        });
+        
+        function movePlayer(delta) {
+            const gameAreaRect = gameArea.getBoundingClientRect();
+            const playerWidth = player.offsetWidth; // Ancho del personaje
+            const minX = 0; // Límite izquierdo
+            const maxX = gameAreaRect.width - playerWidth; // Límite derecho
+            
+            playerX = Math.max(minX, Math.min(maxX, playerX + delta));
+            player.style.left = `${playerX}px`;
+        }
+        
+        function createHeart() {
+            if (!gameRunning || hearts.length >= maxHearts) return;
+            
+            const heart = document.createElement("div");
+            heart.classList.add("heart");
+            const gameAreaRect = gameArea.getBoundingClientRect();
+            heart.style.left = `${Math.random() * (gameAreaRect.width - 45)}px`; // Ajuste para corazones más grandes
+            heart.style.top = "0px";
+            gameArea.appendChild(heart);
+            hearts.push(heart);
+        
+            moveHeart(heart);
+        }
+        
+        function moveHeart(heart) {
+            let heartPosition = 0;
+            const heartFall = setInterval(() => {
+                if (!gameRunning) return clearInterval(heartFall);
+        
+                heartPosition += heartSpeed; // Velocidad de caída
+                heart.style.top = `${heartPosition}px`;
+        
+                const playerRect = player.getBoundingClientRect();
+                const heartRect = heart.getBoundingClientRect();
+        
+                // Detección de colisión mejorada
+                if (
+                    heartRect.bottom >= playerRect.top && // El corazón está a la altura del personaje
+                    heartRect.right >= playerRect.left && // El corazón no está a la izquierda del personaje
+                    heartRect.left <= playerRect.right // El corazón no está a la derecha del personaje
+                ) {
+                    popSound.play();
+                    score++;
+                    scoreDisplay.textContent = score;
+                    clearInterval(heartFall);
+                    heart.remove();
+                    hearts = hearts.filter(h => h !== heart);
+                    
+                    // Aumentar la dificultad
+                    if (score % 5 === 0) { // Cada 5 corazones atrapados
+                        heartSpeed += 0.5; // Aumentar la velocidad
+                        maxHearts += 1; // Aumentar la cantidad de corazones
+                        heartSpawnRate = Math.max(500, heartSpawnRate - 100); // Reducir el intervalo de aparición
+                    }
+                }
+        
+                if (heartPosition > gameArea.getBoundingClientRect().height) {
+                    clearInterval(heartFall);
+                    heart.remove();
+                    hearts = hearts.filter(h => h !== heart);
+                    heartsLeft--;
+                    heartsDisplay.textContent = heartsLeft;
+                    if (heartsLeft <= 0) {
+                        endGame();
+                    }
+                }
+            }, 50);
+        }
+        
+        function endGame() {
+            gameRunning = false;
+            finalScore.textContent = score;
+            gameOverScreen.style.display = "block";
+        }
+        
+        function restartGame() {
+            gameRunning = true;
+            score = 0;
+            heartsLeft = 3;
+            heartSpeed = 3; // Reiniciar la velocidad
+            maxHearts = 1; // Reiniciar la cantidad de corazones
+            heartSpawnRate = 1000; // Reiniciar el intervalo de aparición
+            scoreDisplay.textContent = score;
+            heartsDisplay.textContent = heartsLeft;
+            gameOverScreen.style.display = "none";
+        
+            hearts.forEach(heart => heart.remove());
+            hearts = [];
+        }
+        
+        setInterval(createHeart, heartSpawnRate);
+        
+        document.getElementById("home-button").addEventListener("click", function() {
+            let button = this;
+            button.style.animation = "bounce 0.5s";
+        
+            setTimeout(() => {
+                window.location.href = "../menu.html"; // Redirige al menú
+            }, 500);
+        });
+        
+        const style = document.createElement('style');
+        style.innerHTML = `
+        @keyframes bounce {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }`;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

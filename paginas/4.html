@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cartas Virtuales 💌</title>
+    <link rel="stylesheet" href="../CSS/4.css">
+</head>
+<body>
+    <div class="container">
+        <button id="home-button">🏠 Volver al Inicio</button>
+
+        <h1> Cartas Especiales 💌</h1>
+        <p>Haz clic en una carta para ver su mensaje 💖</p>
+        <div class="cards">
+            <div class="card" onclick="openCard(0)">
+                <img src="../IMG/4.png" alt="Carta cerrada">
+            </div>
+            <div class="card" onclick="openCard(1)">
+                <img src="../IMG/4.png" alt="Carta cerrada">
+            </div>
+            <div class="card" onclick="openCard(2)">
+                <img src="../IMG/4.png" alt="Carta cerrada">
+            </div>
+        </div>
+        <div id="message-box">
+            <p id="message"></p>
+            <button id="close-btn" onclick="closeMessage()">Cerrar</button>
+        </div>
+    </div>
+    <script src="../JS/4.js"></script>
+</body>
+</html>
